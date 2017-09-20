@@ -1,16 +1,17 @@
-var amqpb = require('amqplib/callback_api');
+var amqp = require('amqplib/callback_api');
 
-amqpb.connect('amqp://localhost', function(err, conn) {
+// Creating a connection
+amqp.connect('amqp://localhost', function(err, conn) {
   conn.createChannel(function(err, ch) {
     var q = 'hello';
     ch.assertQueue(q, {
-      durable: false
+      durable: false, // Look what is this
     });
-    ch.sendToQueue(q, new Buffer('Hello World !'));
-    console.log(' [x] Sent "Hello World"');
+    ch.sendToQueue(q, new Buffer('Hello World'));
+    console.log('Sent Hello World');
   });
   setTimeout(function() {
     conn.close();
-    process.exit(0)
-  }, 500);
+    process.exit(0);
+  }, 500)
 });
