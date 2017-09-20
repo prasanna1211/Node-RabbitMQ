@@ -13,5 +13,5 @@ amqp.connect('amqp://localhost', function(err, conn) {
   setTimeout(function() {
     conn.close();
     process.exit(0);
-  }, 500)
+  }, 5000)
 });
