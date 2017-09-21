@@ -2,19 +2,19 @@ var amqp = require('amqplib/callback_api');
 
 amqp.connect('amqp://localhost', function(err, conn) {
   conn.createChannel(function(err, ch) {
-    var q = 'task_queue';
-    ch.assertQueue(q, {
-      durable: true,
+    var exchange = 'logs';
+
+    ch.assertExchange(exchange, 'fanout', {
+      durable: false,
     });
-    console.log('Waiting for messages from queue');
-    ch.consume(q, function(msg) {
-      var delaySeconds = msg.content.toString().split('.').length - 1;
-      console.log('Recieved ', msg.content.toString());
-      setTimeout(function() {
-        console.log('done the task ', msg.content.toString());
-      }, delaySeconds * 1000);
-    }, {
-      noAck: false,
+
+    ch.assertQueue('', { exclusive: true }, function(err, q) {
+      console.log('Waiting for messages ', q.queue);
+      ch.bindQueue(q.queue, exchange, '');
+
+      ch.consume(q.queue, function(msg) {
+        console.log(' recieved ', msg.content.toString());
+      }, { noAck: true });
     });
   });
-})
+});
